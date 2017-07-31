@@ -16,12 +16,15 @@
 
                 </el-col>
                 <el-col :span="18">
+
+                <div class="smallHeader">German</div>
                 <div class="gerMeaning">
                     <div class="meaning"  v-for="meaning in entry.doc.meanings.ger">
                     {{ meaning.text }}
                     </div>
                 </div>
 
+                <div class="smallHeader">English</div>
                 <div class="engMeaning">
                     <div class="meaning"  v-for="meaning in entry.doc.meanings.eng">
                             {{ meaning }}
