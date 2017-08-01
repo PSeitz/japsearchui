@@ -1,28 +1,36 @@
 <template>
   <div id="app" class="all">
     <!-- <el-row type="flex" class="row-bg" justify="space-around">
-      <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
-      <el-col :span="6"><div class="grid-content bg-purple-light"><suggestion></suggestion></div></el-col>
-      <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
+      <el-col :span="6"><div class="grid-content"></div></el-col>
+      <el-col :span="6"><div class="grid-content-light"><suggestion></suggestion></div></el-col>
+      <el-col :span="6"><div class="grid-content"></div></el-col>
     </el-row>
 
     <el-row type="flex" class="row-bg" justify="center">
-      <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
-      <el-col :span="6"><div class="grid-content bg-purple-light"><suggestion></suggestion></div></el-col>
-      <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
+      <el-col :span="6"><div class="grid-content"></div></el-col>
+      <el-col :span="6"><div class="grid-content-light"><suggestion></suggestion></div></el-col>
+      <el-col :span="6"><div class="grid-content"></div></el-col>
     </el-row>
 
     <el-row type="flex" class="row-bg" justify="center">
-      <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
-      <el-col :span="6"><div class="grid-content bg-purple-light"><search></search></div></el-col>
-      <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
+      <el-col :span="6"><div class="grid-content"></div></el-col>
+      <el-col :span="6"><div class="grid-content-light"><search></search></div></el-col>
+      <el-col :span="6"><div class="grid-content"></div></el-col>
     </el-row> -->
 
+    <el-row :gutter="0" >
+      <el-col :xs="0"  :sm="4"  :md="6" :lg="6"><div class="grid-content"></div></el-col>
+      <el-col :xs="24" :sm="16" :md="12" :lg="12">
+      <div class="grid-content-light">
+      <h1 class="top" >Ibiki <img class="logo" src="./assets/sleep_60.png"> Jibiki</h1> 
+      </div></el-col>
+      <el-col :xs="0"  :sm="4"  :md="6" :lg="6"><div class="grid-content"></div></el-col>
+    </el-row>
 
     <el-row :gutter="0">
-      <el-col :xs="0"  :sm="4"  :md="6" :lg="6"><div class="grid-content bg-purple"></div></el-col>
-      <el-col :xs="24" :sm="16" :md="12" :lg="12"><div class="grid-content bg-purple-light"><suggestion></suggestion></div></el-col>
-      <el-col :xs="0"  :sm="4"  :md="6" :lg="6"><div class="grid-content bg-purple"></div></el-col>
+      <el-col :xs="0"  :sm="4"  :md="6" :lg="6"><div class="grid-content"></div></el-col>
+      <el-col :xs="24" :sm="16" :md="12" :lg="12"><div class="grid-content-light"><suggestion></suggestion></div></el-col>
+      <el-col :xs="0"  :sm="4"  :md="6" :lg="6"><div class="grid-content"></div></el-col>
     </el-row>
 
     <el-row :gutter="0">
@@ -84,5 +92,12 @@ body {
 }
 .all{
   color: #1F2D3D
+}
+.logo{
+  top: 8px;
+  position: relative;
+}
+.top{
+  margin: 0;
 }
 </style>

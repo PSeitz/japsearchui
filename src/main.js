@@ -12,9 +12,9 @@ Vue.use(VueResource);
 // import Vue_Responsive from 'vue-responsive'
 // Vue.directive('responsiveness', Vue_Responsive);
 
-import MuseUI from 'muse-ui'
-import 'muse-ui/dist/muse-ui.css'
-Vue.use(MuseUI)
+// import MuseUI from 'muse-ui'
+// import 'muse-ui/dist/muse-ui.css'
+// Vue.use(MuseUI)
 
 const EventBus = new Vue()
 Object.defineProperties(Vue.prototype, {

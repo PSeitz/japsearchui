@@ -4,6 +4,7 @@
 
 
             <el-row type="flex" class="row-bg" justify="center">
+                {{entry.hit.score}}
                 <el-col :span="6">
                     <h1 class="kanji"  v-for="kanji in entry.doc.kanji">
                         <a :title="kanji.readings[0]" href="#fg">{{ kanji.text }}</a>
@@ -124,7 +125,7 @@ export default {
                                 {
                                     "path":"commonness",
                                     "boost_fun": "Log10",
-                                    "param": 1
+                                    "param": 0
                                 },{
                                     "path":"meanings.ger[].rank",
                                     "expression": "10 / $SCORE"
@@ -186,10 +187,10 @@ body {
     display: inline-block;
 }
 .gerMeaning{
-    padding-top: 2px;
+    /*padding-top: 2px;*/
 }
 .engMeaning{
-    padding-top: 8px;
+    /*padding-top: 8px;*/
 }
 .kanji{
     margin: 0.2em 0 0.4em 0em
@@ -200,6 +201,9 @@ body {
 .text{
     white-space:normal;
     display: inline-block; 
+}
+.smallHeader{
+    font-size: 8px;
 }
 /* /r/LearnJapanese furigana */
 a[href$="/fg"], a[href$="#fg"], a[href$="/fgb"], a[href$="#fgb"] {
