@@ -65,9 +65,11 @@ export default {
             });
         },
         get_search(queryString){
-            let res = jap_check.check_string(queryString);
-            if (res == "KANJI") {
-                return {
+            queryString = queryString.toLowerCase().trim()
+            var ors = [];
+
+            if (wanakana.isKanji(queryString)) {
+                ors.push({
                     "search": {
                         "term": queryString,
                         "path": "kanji[].text",
@@ -84,14 +86,13 @@ export default {
                             "boost_fun": "Log10",
                             "param": 1
                         }
-                    ],
-                    "top": 10,
-                    "skip": 0
-                }
-            }else if(res == "KANA"){
-                return {
+                    ]
+                })
+            }
+            if(wanakana.isKana(wanakana.toKana(queryString))){
+                ors.push({
                     "search": {
-                        "term": queryString,
+                        "term": wanakana.toKana(queryString),
                         "path": "kana[].text",
                         "levenshtein_distance": 0,
                         "starts_with": true
@@ -106,16 +107,16 @@ export default {
                             "boost_fun": "Log10",
                             "param": 1
                         }
-                    ],
-                    "top": 10,
-                    "skip": 0
-                }
-            }else{
-                return {
-                    "or":[
+                    ]
+                })
+            }
+
+            if (wanakana.isRomaji(wanakana.toRomaji(queryString))) {
+                Array.prototype.push.apply(ors,
+                    [
                         {
                             "search": {
-                                "term": queryString,
+                                "term": wanakana.toRomaji(queryString),
                                 "path": "meanings.ger[].text",
                                 "levenshtein_distance": 1
                             },
@@ -132,7 +133,7 @@ export default {
                         },
                         {
                             "search": {
-                                "term": queryString,
+                                "term": wanakana.toRomaji(queryString),
                                 "path": "meanings.eng[]",
                                 "levenshtein_distance": 1
                             },
@@ -144,12 +145,15 @@ export default {
                                 }
                             ]
                         }
-                    ],
-                    "top": 10,
-                    "skip": 0
-                }
+                    ]
+                )
             }
-            
+
+            return {
+                "or":ors,
+                "top": 10,
+                "skip": 0
+            }
         },
         handleSelect(item) {
             console.log(item);

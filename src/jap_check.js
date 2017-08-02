@@ -27,5 +27,20 @@ export default {
         return "NONE"
     }
 
+  },
+
+  query: function(term, path, levenshtein, startsWith){
+        var query = {
+            "term": term,
+            "path": path,
+            "levenshtein_distance": levenshtein
+        }
+        if (startsWith) {
+            query.starts_with = true;
+        }
+        return query
+
   }
+
+
 }
