@@ -50,11 +50,22 @@ export default {
                     }
                 )
             }
-            if(wanakana.isKana(wanakana.toKana(queryString))){
+            if(wanakana.isHiragana(wanakana.toHiragana(queryString))){
                 console.log("isKana or converted")
                 suggests.push(
                     {
-                        "term": wanakana.toKana(queryString),
+                        "term": wanakana.toHiragana(queryString),
+                        "path": "kana[].text",
+                        "starts_with": true
+                    }
+                )
+            }
+
+            if(wanakana.isKatakana(wanakana.toKatakana(queryString))){
+                console.log("isKana or converted")
+                suggests.push(
+                    {
+                        "term": wanakana.toKatakana(queryString),
                         "path": "kana[].text",
                         "starts_with": true
                     }

@@ -1,6 +1,6 @@
 <template>
     <div id="search" v-on:newSearch="querySearch">
-        <div id="listContainer" v-for="entry in entries">
+        <div class="container" id="listContainer" v-for="entry in entries">
 
 
             <el-row type="flex" class="row-bg" justify="center">
@@ -35,8 +35,6 @@
                 </el-col>
             </el-row>
 
-
-            <hr>
         </div>
     </div>
 </template>
@@ -90,10 +88,32 @@ export default {
                     ]
                 })
             }
-            if(wanakana.isKana(wanakana.toKana(queryString))){
+            if(wanakana.isHiragana(wanakana.toHiragana(queryString))){
                 ors.push({
                     "search": {
-                        "term": wanakana.toKana(queryString),
+                        "term": wanakana.toHiragana(queryString),
+                        "path": "kana[].text",
+                        "levenshtein_distance": 0,
+                        "starts_with": true
+                    },
+                    "boost": [
+                        {
+                            "path":"commonness",
+                            "boost_fun": "Log10",
+                            "param": 1
+                        },{
+                            "path":"kana[].commonness",
+                            "boost_fun": "Log10",
+                            "param": 1
+                        }
+                    ]
+                })
+            }
+
+            if(wanakana.isKatakana(wanakana.toKatakana(queryString))){
+                ors.push({
+                    "search": {
+                        "term": wanakana.toKatakana(queryString),
                         "path": "kana[].text",
                         "levenshtein_distance": 0,
                         "starts_with": true
@@ -204,6 +224,9 @@ body {
 }
 .smallHeader{
     font-size: 8px;
+}
+.container{
+    border-bottom: 1px solid #eee;
 }
 /* /r/LearnJapanese furigana */
 a[href$="/fg"], a[href$="#fg"], a[href$="/fgb"], a[href$="#fgb"] {
