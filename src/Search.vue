@@ -1,275 +1,296 @@
 <template>
-    <div id="search" v-on:newSearch="querySearch">
-        <div class="container" id="listContainer" v-for="entry in entries">
+    <div id="search" class="searchContainer" v-on:newSearch="emitNewSearch">
+        <!-- <div v-if="hasResult" class="numHits">Results: {{result.num_hits}}</div> -->
+        <div class="listContainer" v-for="entry in result.data">
 
+            <div class="columns  is-gapless">
+                <div class="column is-2 isquerter">
+                        <div class="kanji"  v-for="kanji in entry.doc.kanji">
 
-            <el-row type="flex" class="row-bg" justify="center">
-                {{entry.hit.score}}
-                <el-col :span="6">
-                    <h1 class="kanji"  v-for="kanji in entry.doc.kanji">
-                        <a :title="kanji.readings[0]" href="#fg">{{ kanji.text }}</a>
-                        <!-- <div class="text">{{ kanji.text }}</div> - <div class="reading text" v-for="read in kanji.readings">{{ read }}</div> -->
-                    </h1>
+                            <ruby>{{ kanji.text }}<rt>{{kanji.readings[0]}}</rt></ruby>
+                            <!-- <span class="commonness">{{ kanji.commonness }}</span> -->
 
-                    <h1 v-if="entry.doc.kanji.length == 0" class="kana"  v-for="kana in entry.doc.kana">
-                        {{ kana.text }}
-                    </h1>
+                            <div class="bar-outer">
+                              <div class="bar-container" v-bind:style="{ width: Math.log10(kanji.commonness + 1) * 100 / 3 + '%' }" >{{ kanji.commonness }}</div>
+                            </div>
 
-                </el-col>
-                <el-col :span="18">
+                        </div>
 
-                <div class="smallHeader">German</div>
-                <div class="gerMeaning">
-                    <div class="meaning"  v-for="meaning in entry.doc.meanings.ger">
-                    {{ meaning.text }}
-                    </div>
+                        <div v-if="entry.doc.kanji.length == 0" class="kana"  v-for="kana in entry.doc.kana">
+                            {{ kana.text }}
+                        </div>
+                        <div class="score smallHeader" >{{entry.hit.score}}</div>
                 </div>
+                <div class="column">
 
-                <div class="smallHeader">English</div>
-                <div class="engMeaning">
-                    <div class="meaning"  v-for="meaning in entry.doc.meanings.eng">
-                            {{ meaning }}
-                    </div>
+                        <p class="smallHeader" v-if="entry.doc.meanings.ger">German</p>
+                        <div class="meaningBlock">
+                            <span class="meaning"  v-for="(meaning, index) in entry.doc.meanings.ger">
+                                <span> {{ meaning.text }} </span> <span v-if="index !== (entry.doc.meanings.ger.length-1)" class="separator">&#9679;</span>
+                            </span>
+                        </div>
+
+                        <p class="smallHeader"  v-if="entry.doc.meanings.eng">English</p>
+                        <div class="meaningBlock">
+                            <span class="meaning"  v-for="(meaning, index) in entry.doc.meanings.eng">
+                                <span> {{ meaning }}  </span> <span v-if="index !== (entry.doc.meanings.eng.length-1)" class="separator">&#9679;</span>
+                            </span>
+                        </div>
                 </div>
+            </div>
 
-                </el-col>
-            </el-row>
 
         </div>
+
+        <div class="pagingContainer">
+            <el-pagination v-if="hasResult" @current-change=handlePagination
+              layout="prev, pager, next, total"
+              :total="result.num_hits" :currentPage="currentPage">
+            </el-pagination>
+        </div>
+
     </div>
 </template>
 
-
-
 <script>
 import jap_check from './jap_check'
+import wanakana from './convert'
 
 export default {
     data () {
         return {
-            entries: []        }
+            result: {},
+            currentPage:1
+        }
+    },
+    computed: {
+        hasResult: function () {
+            return this.result && this.result.data && this.result.data.length != 0
+        }
+        // currentPage: function () {
+        //     console.log(1 + this.getSkip()/10)
+        //     1 + this.getSkip()/10;
+        // }
+    },
+    created: function () {
+        var search = jap_check.findGetParameter('q');
+        if (search !=null) {
+            this.$emit('input', {term:search, forceSearch:true});
+            this.querySearch();
+        }
+
+        this.currentPage = 1 + this.getSkip()/10;
+        // window.onpopstate = (event) => {
+        //     var search = jap_check.findGetParameter('q');
+        //     if (search !=null) {
+        //         this.$emit('input', search);
+        //         this.querySearch(search);
+        //     }
+        // };
+
     },
     methods: {
-        querySearch(queryString) {
-            console.log("ALARM")
+        handlePagination(newPage){
+            // alert(newPage)
+            if(jap_check.handleURL(null, (newPage - 1) * 10))
+                this.querySearch()
+        },
+        emitNewSearch(queryString){
+            this.$bus.$emit('newSearch', {term:queryString})
+        },
+        querySearch() {
+            var queryString = jap_check.findGetParameter('q');
+            if (queryString.length == 0) {
+                if (this.previousRequest) this.previousRequest.abort();
+                return
+            }
             var self = this;
-            var url = `http://localhost:3000/search`
-            this.$http.post(url, this.get_search(queryString))
+            var url = jap_check.url()+`/search`
+            this.$http.post(url, this.get_search(queryString), {
+                before(request) {
+                    if (this.previousRequest) {this.previousRequest.abort(); }
+                    this.previousRequest = request;
+                }
+            })
             .then((response) => {
-                    self.entries = response.body
-                    // cb(response.body);
+                    self.result = response.body
             }, (response) => {
-                    // error callback
                     console.log(response);
             });
         },
         get_search(queryString){
+            if (queryString.indexOf("to ") == 0) {
+                queryString = queryString.substr(3, queryString.length)
+            }
             queryString = queryString.toLowerCase().trim()
             var ors = [];
 
-            if (wanakana.isKanji(queryString)) {
+            if (jap_check.containsKanji(queryString)) {
                 ors.push({
-                    "search": {
-                        "term": queryString,
-                        "path": "kanji[].text",
-                        "levenshtein_distance": 0,
-                        "starts_with": true
-                    },
+                    "search": jap_check.query(queryString,"kanji[].text", 0 ,true),
                     "boost": [
-                        {
-                            "path":"commonness",
-                            "boost_fun": "Log10",
-                            "param": 1
-                        },{
-                            "path":"kanji[].commonness",
-                            "boost_fun": "Log10",
-                            "param": 1
-                        }
+                        jap_check.boost("commonness", "Log10",1),
+                        jap_check.boost("kanji[].commonness", "Log10",1)
                     ]
                 })
             }
             if(wanakana.isHiragana(wanakana.toHiragana(queryString))){
                 ors.push({
-                    "search": {
-                        "term": wanakana.toHiragana(queryString),
-                        "path": "kana[].text",
-                        "levenshtein_distance": 0,
-                        "starts_with": true
-                    },
+                    "search": jap_check.query(wanakana.toHiragana(queryString),"kana[].text", 0, true),
                     "boost": [
-                        {
-                            "path":"commonness",
-                            "boost_fun": "Log10",
-                            "param": 1
-                        },{
-                            "path":"kana[].commonness",
-                            "boost_fun": "Log10",
-                            "param": 1
-                        }
+                        jap_check.boost("commonness", "Log10",1),
+                        jap_check.boost("kana[].commonness", "Log10",1)
                     ]
                 })
             }
 
             if(wanakana.isKatakana(wanakana.toKatakana(queryString))){
                 ors.push({
-                    "search": {
-                        "term": wanakana.toKatakana(queryString),
-                        "path": "kana[].text",
-                        "levenshtein_distance": 0,
-                        "starts_with": true
-                    },
+                    "search": jap_check.query(wanakana.toKatakana(queryString),"kana[].text", 0, false),
                     "boost": [
-                        {
-                            "path":"commonness",
-                            "boost_fun": "Log10",
-                            "param": 1
-                        },{
-                            "path":"kana[].commonness",
-                            "boost_fun": "Log10",
-                            "param": 1
-                        }
+                        jap_check.boost("commonness", "Log10", 1),
+                        jap_check.boost("kana[].commonness", "Log10", 1)
                     ]
                 })
             }
 
-            if (wanakana.isRomaji(wanakana.toRomaji(queryString))) {
-                Array.prototype.push.apply(ors,
-                    [
-                        {
-                            "search": {
-                                "term": wanakana.toRomaji(queryString),
-                                "path": "meanings.ger[].text",
-                                "levenshtein_distance": 1
-                            },
-                            "boost": [
-                                {
-                                    "path":"commonness",
-                                    "boost_fun": "Log10",
-                                    "param": 0
-                                },{
-                                    "path":"meanings.ger[].rank",
-                                    "expression": "10 / $SCORE"
-                                }
-                            ]
-                        },
-                        {
-                            "search": {
-                                "term": wanakana.toRomaji(queryString),
-                                "path": "meanings.eng[]",
-                                "levenshtein_distance": 1
-                            },
-                            "boost": [
-                                {
-                                    "path":"commonness",
-                                    "boost_fun": "Log10",
-                                    "param": 1
-                                }
-                            ]
-                        }
-                    ]
-                )
+            if (wanakana.isRomaji(wanakana.toRomaji(queryString)) || jap_check.isRomajiOrGerman(queryString)) {
+                let levenshtein = 0;
+                if(wanakana.isRomaji(queryString) || jap_check.isRomajiOrGerman(queryString)){
+                    levenshtein = 1;
+                }
+                let queryString2 = wanakana.toRomaji(queryString);
+                ors.push(
+                    {
+                        "search": jap_check.query(queryString2,"meanings.ger[].text", levenshtein, false),
+                        "boost": [
+                            jap_check.boost("commonness", "Log10", 1),
+                            {
+                                "path":"meanings.ger[].rank",
+                                "expression": "10 / $SCORE"
+                            }
+                        ]
+                    })
+
+                ors.push(
+                    {
+                        "search": jap_check.query(queryString,"meanings.eng[]", levenshtein, false),
+                        "boost": [jap_check.boost("commonness", "Log10", 1) ]
+                    })
             }
 
             return {
                 "or":ors,
                 "top": 10,
-                "skip": 0
+                "skip": this.getSkip()
             }
         },
         handleSelect(item) {
             console.log(item);
+        },
+        getSkip(item) {
+            return parseInt(jap_check.findGetParameter("skip"), 10) || 0
         }
     },
     mounted() {
-        this.$bus.$on('newSearch', ($event) => {
-            console.log('My event has been triggered', $event)
-            this.querySearch($event)
+        this.$bus.$on('newSearch', (newTerm) => {
+            console.log("newSearchnewTerm in Search", newTerm.term)
+
+            if (jap_check.handleURL(newTerm.term, null) || newTerm.forceSearch) // url did change
+                this.querySearch()
         })
     }
 }
 </script>
 
-<style>
-    .el-autocomplete {
-        width: 100%;
-    }
+<style lang="less">
+@import (reference) "colors.less";
+
+.el-autocomplete {
+    width: 100%;
+}
 body {
     font-family: Helvetica, sans-serif;
 }
+.bar-outer{
+    font-size: 50%;
+    // background-color: @color-secondary-1-0;
+    margin: 0.25rem;
+    margin-left: 0;
+    margin-right: 2rem;
+    border-radius: 4px;
+}
+.bar-container{
+    background-color: @color-secondary-2-0;
+    max-width: 100%;
+    border-radius: 4px;
+}
+.meaningBlock{
+    margin-bottom: 8px;
+}
 .meaning{
-    background-color: #C0CCDA;
-    margin: 3px 0px 1px 5px;
-    padding: 5px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    // color: #eee;
+    // background-color: @color-secondary-2-4;
+    // margin: 2px 0px 0px 2px;
+    // padding: 8px;
+    padding-top: 1px;
+    padding-bottom: 1px;
     border-radius: 2px;
-    white-space:normal;
+    white-space: normal;
     display: inline-block;
+    font-size: 0.8rem;
+}
+.separator{
+    margin-left: 8px;
+    margin-right: 8px;
 }
 .gerMeaning{
     /*padding-top: 2px;*/
 }
 .engMeaning{
-    /*padding-top: 8px;*/
+    padding-top: 8px;
 }
 .kanji{
-    margin: 0.2em 0 0.4em 0em
+    // margin: 0.2rem 0 0.4rem 0rem;
+    font-size: 150%;
+}
+.commonness{
+    font-size: 50%;
+    color: @color-secondary-2-0;
 }
 .reading{
     color: #FF9000
 }
 .text{
     white-space:normal;
-    display: inline-block; 
+    display: inline-block;
+}
+.score{
+    color: @color-secondary-2-0;
+    position: absolute;
+    bottom: 0px;
 }
 .smallHeader{
     font-size: 8px;
+    margin-left: 2px;
 }
-.container{
+.listContainer{
     border-bottom: 1px solid #eee;
-}
-/* /r/LearnJapanese furigana */
-a[href$="/fg"], a[href$="#fg"], a[href$="/fgb"], a[href$="#fgb"] {
-    cursor: default !important;
-    text-decoration: none;
-    line-height: 1;
-    text-align: center;
-    display: inline-block;
-    color: inherit !important;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
     position: relative;
 }
-a[href$="/fgb"], a[href$="#fgb"] {
-    top: 0.8em;
-    margin-top:-0.8em;
-    margin-bottom: 0.5em;
+.numHits{
+    padding-top: .5rem;
+    color: @color-secondary-2-0;
+    font-size: 12px;
+    right: 0.2rem;
+    position: absolute;
 }
-/* For the ruby characters. */
-a[href$="/fg"]:before, a[href$="#fg"]:before, a[href$="/fgb"]:after, a[href$="#fgb"]:after {
-    font-size: 0.70em;
-    font-weight: normal;
-    line-height: 1.2;
-    cursor: default;
-    text-decoration: none;
-    display: block;
-    content: attr(title);
-    position: relative;
+.searchContainer{
+    // text-align: center;
 }
-/* Second option (then you can have furigana underneath aswell)*/
-sup:before {
-    cursor: default !important;
-    text-decoration: none;
-    line-height: 1;
+.pagingContainer{
     text-align: center;
-    display: inline-block;
-    color: inherit !important;
 }
- 
-sup {
-    font-size: 0.70em;
-    font-weight: normal;
-    line-height: 1.2;
-    cursor: pointer;
-    text-decoration: none;
-    display: block;
-} 
 </style>
