@@ -1,7 +1,8 @@
 export default {
   url:function(){
     // return "http://192.168.3.6:3000"
-    return "http://localhost:3000"
+    // return "http://localhost:3000/jmdict"
+    return "http://94.130.184.231:3000/jmdict"
   },
 
   check_string: function(input){
@@ -53,7 +54,7 @@ export default {
 
   query: function(term, path, levenshtein, startsWith){
         var query = {
-            "term": term,
+            "terms": [term],
             "path": path,
             "levenshtein_distance": levenshtein
         }

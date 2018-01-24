@@ -51,7 +51,7 @@ export default {
                 console.log("isKanji")
                 suggests.push(
                     {
-                        "term": queryString,
+                        "terms": [queryString],
                         "path": "kanji[].text",
                         "starts_with": true
                     }
@@ -61,7 +61,7 @@ export default {
                 console.log("isKana or converted")
                 suggests.push(
                     {
-                        "term": wanakana.toHiragana(queryString),
+                        "terms": [wanakana.toHiragana(queryString)],
                         "path": "kana[].text",
                         "starts_with": true
                     }
@@ -72,7 +72,7 @@ export default {
                 console.log("isKana or converted")
                 suggests.push(
                     {
-                        "term": wanakana.toKatakana(queryString),
+                        "terms": [wanakana.toKatakana(queryString)],
                         "path": "kana[].text",
                         "starts_with": true
                     }
@@ -84,7 +84,7 @@ export default {
                 var levenshtein_distance = wanakana.toRomaji(queryString).length >= 3 ? 1: 0;
                 Array.prototype.push.apply(suggests,[
                         {
-                            "term": wanakana.toRomaji(queryString),
+                            "terms": [wanakana.toRomaji(queryString)],
                             "path": "meanings.ger[].text",
                             "levenshtein_distance": levenshtein_distance,
                             "starts_with": true,
@@ -95,7 +95,7 @@ export default {
                             }
                         },
                         {
-                            "term": wanakana.toRomaji(queryString),
+                            "terms": [wanakana.toRomaji(queryString)],
                             "path": "meanings.eng[]",
                             "levenshtein_distance": levenshtein_distance,
                             "starts_with": true,
@@ -104,6 +104,12 @@ export default {
                                 "boost_fun":"Linear",
                                 "param":1
                             }
+                        },
+                        {
+                            "terms": [queryString],
+                            "path": "kana[].romaji",
+                            "levenshtein_distance": levenshtein_distance,
+                            "starts_with": true
                         }
                 ])
             }
