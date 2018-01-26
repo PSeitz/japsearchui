@@ -29,6 +29,8 @@ Vue.use(VueResource);
 // import 'muse-ui/dist/muse-ui.css'
 // Vue.use(MuseUI)
 
+window['is_dev'] = JSON.stringify(process.env)
+
 const EventBus = new Vue()
 Object.defineProperties(Vue.prototype, {
   $bus: {

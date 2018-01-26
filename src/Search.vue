@@ -19,7 +19,7 @@
                         <div v-if="entry.doc.kanji.length == 0" class="kana"  v-for="kana in entry.doc.kana">
                             {{ kana.text }}
                         </div>
-                        <div class="score smallHeader" >{{entry.hit.score}}</div>
+                        <!-- <div class="score smallHeader" >{{entry.hit.score}}</div> -->
                 </div>
                 <div class="column">
 
