@@ -4,9 +4,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const PurifyCSSPlugin = require('purifycss-webpack');
 const url = require('url')
+const fs = require('fs')
 const publicPath = ''
 const glob = require('glob');
 const path = require('path');
+const sass = require('node-sass');
+
+const result = sass.renderSync({
+  file: 'bulma.sass',
+  outputStyle: 'compressed'
+})
+fs.writeFileSync('./src/css/bulma.css',result.css)
 
 module.exports = (options = {}) => ({
   entry: {
