@@ -12,12 +12,13 @@ const path = require('path');
 // const CriticalPlugin = require('webpack-plugin-critical').CriticalPlugin;
 // const HtmlCriticalPlugin = require("html-critical-webpack-plugin");
 
-const sass = require('node-sass');
-const result = sass.renderSync({
-  file: 'bulma.sass',
-  outputStyle: 'compressed'
-})
-fs.writeFileSync('./src/css/bulma.css',result.css)
+// This is super unstable
+// const sass = require('node-sass');
+// const result = sass.renderSync({
+//   file: 'bulma.sass',
+//   outputStyle: 'compressed'
+// })
+// fs.writeFileSync('./src/css/bulma.css',result.css)
 
 module.exports = (options = {}) => ({
   entry: {
