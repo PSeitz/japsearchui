@@ -8,13 +8,16 @@ const fs = require('fs')
 const publicPath = ''
 const glob = require('glob');
 const path = require('path');
-const sass = require('node-sass');
 
-const result = sass.renderSync({
-  file: 'bulma.sass',
-  outputStyle: 'compressed'
-})
-fs.writeFileSync('./src/css/bulma.css',result.css)
+const CriticalPlugin = require('webpack-plugin-critical').CriticalPlugin;
+// const HtmlCriticalPlugin = require("html-critical-webpack-plugin");
+
+// const sass = require('node-sass');
+// const result = sass.renderSync({
+//   file: 'bulma.sass',
+//   outputStyle: 'compressed'
+// })
+// fs.writeFileSync('./src/css/bulma.css',result.css)
 
 module.exports = (options = {}) => ({
   entry: {
@@ -76,6 +79,12 @@ module.exports = (options = {}) => ({
     }),
     new HtmlWebpackPlugin({
       template: 'src/index.html'
+    }),
+    new CriticalPlugin({
+      src: 'index.html',
+      inline: true,
+      minify: true,
+      dest: 'index.html'
     })
   ],
   resolve: {
