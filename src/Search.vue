@@ -8,7 +8,6 @@
                         <div class="kanji"  v-for="kanji in entry.doc.kanji">
 
                             <ruby class="ruby"><rb>{{ kanji.text }}</rb><rt>{{kanji.readings[0]}}</rt></ruby>
-                            <!-- <span class="commonness">{{ kanji.commonness }}</span> -->
 
                             <div class="bar-outer" v-if="kanji.commonness != 0">
                               <div class="bar-container" v-bind:style="{ width: Math.log10(kanji.commonness + 1) * 100 / 3 + '%' }" >{{ kanji.commonness }}</div>
@@ -67,10 +66,6 @@ export default {
         hasResult: function () {
             return this.result && this.result.data && this.result.data.length != 0
         }
-        // currentPage: function () {
-        //     console.log(1 + this.getSkip()/10)
-        //     1 + this.getSkip()/10;
-        // }
     },
     created: function () {
         var search = jap_check.findGetParameter('q');
@@ -257,7 +252,7 @@ body {
     line-height: 1em;
 }
 .ruby{
-    ruby-align: center;
+    // ruby-align: center;
 }
 .commonness{
     font-size: 50%;

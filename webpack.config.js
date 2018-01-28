@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const PurifyCSSPlugin = require('purifycss-webpack');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const url = require('url')
 const fs = require('fs')
 const publicPath = ''
@@ -28,7 +29,7 @@ module.exports = (options = {}) => ({
   output: {
     path: resolve(__dirname, 'dist'),
     filename: options.dev ? '[name].js' : '[name].js?[chunkhash]',
-    chunkFilename: '[id].js?[chunkhash]',
+    chunkFilename: '[id].js',
     publicPath: options.dev ? '/assets/' : publicPath
   },
   module: {
@@ -76,11 +77,12 @@ module.exports = (options = {}) => ({
     //   paths: glob.sync(path.join(__dirname, 'src/**/*.vue')),
     // }),
     new webpack.optimize.CommonsChunkPlugin({
-      names: ['vendor', 'manifest']
+      names: ['vendor']
     }),
     new HtmlWebpackPlugin({
       template: 'src/index.html'
-    })
+    }),
+    new UglifyJSPlugin()
     // new CriticalPlugin({
     //   src: 'index.html',
     //   inline: true,
