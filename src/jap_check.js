@@ -1,7 +1,8 @@
 export default {
   url:function(){
     // return "http://localhost:3000/jmdict"
-    return "http://94.130.184.231:3000/jmdict"
+    // return "http://94.130.184.231:3000/jmdict"
+    return "https://ultimatejapanese.de/db/jmdict"
   },
 
   check_string: function(input){
