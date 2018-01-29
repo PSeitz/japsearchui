@@ -5,17 +5,17 @@
 
             <div class="columns  is-gapless">
                 <div class="column is-2 isquerter">
-                        <div class="kanji"  v-for="kanji in entry.doc.kanji">
+                        <div class="kanji"  v-for="kanji in entry.doc.kanji.slice(0, 1)">
 
                             <ruby class="ruby"><rb>{{ kanji.text }}</rb><rt>{{kanji.readings[0]}}</rt></ruby>
 
                             <div class="bar-outer" v-if="kanji.commonness != 0">
-                              <div class="bar-container" v-bind:style="{ width: Math.log10(kanji.commonness + 1) * 100 / 3 + '%' }" >{{ kanji.commonness }}</div>
+                              <div class="bar-container" v-bind:style="{ width: Math.log10(kanji.commonness + 1) * 100 / 3 + '%' }" > <div class="bar-text">{{ kanji.commonness }}</div> </div>
                             </div>
 
                         </div>
 
-                        <div v-if="entry.doc.kanji.length == 0" class="kana"  v-for="kana in entry.doc.kana">
+                        <div v-if="entry.doc.kanji.length == 0" class="kana"  v-for="kana in entry.doc.kana.slice(0, 1)">
                             {{ kana.text }}
                         </div>
                         <!-- <div class="score smallHeader" >{{entry.hit.score}}</div> -->
@@ -214,11 +214,15 @@ body {
     margin-left: 0;
     margin-right: 2rem;
     border-radius: 4px;
+    line-height: 1.5em;
 }
 .bar-container{
     background-color: @color-secondary-2-0;
     max-width: 100%;
     border-radius: 4px;
+}
+.bar-text{
+    padding-left: 4px;
 }
 .meaningBlock{
     margin-bottom: 8px;
@@ -245,12 +249,7 @@ body {
 .engMeaning{
     padding-top: 8px;
 }
-.kanji{
-    // margin: 0.2rem 0 0.4rem 0rem;
-    // font-size: 150%;
-    font-size: 2em;
-    line-height: 1em;
-}
+
 .ruby{
     // ruby-align: center;
 }
@@ -264,6 +263,20 @@ body {
 .text{
     white-space:normal;
     display: inline-block;
+}
+.kana{
+    padding: 8px;
+    padding-left: 0;
+    font-size: 2em;
+    line-height: 1em;
+}
+.kanji{
+    // margin: 0.2rem 0 0.4rem 0rem;
+    // font-size: 150%;
+    font-size: 2em;
+    line-height: 1em;
+    padding: 8px;
+    padding-left: 0;
 }
 .score{
     color: @color-secondary-2-0;
@@ -292,6 +305,7 @@ body {
     // text-align: center;
 }
 .pagingContainer{
+    padding-top: 1em;
     text-align: center;
 }
 </style>

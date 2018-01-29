@@ -20,7 +20,7 @@ export default {
     // u203B     : Weird asterisk thing
 
     var kanjiRegex = /[\u4E00-\u9FAF]/g;
-    var kanaHiraganaRegex = /[\u3040-\u309F]|[\u30A0-\u30FF]/g; 
+    var kanaHiraganaRegex = /[\u3040-\u309F]|[\u30A0-\u30FF]/g;
     var containsKanji = kanjiRegex.test(input);
     var containsKana = kanaHiraganaRegex.test(input);
     var input = "input string";
