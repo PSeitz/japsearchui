@@ -9,7 +9,7 @@ const fs = require('fs')
 const publicPath = ''
 const glob = require('glob');
 const path = require('path');
-
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 // const CriticalPlugin = require('webpack-plugin-critical').CriticalPlugin;
 // const HtmlCriticalPlugin = require("html-critical-webpack-plugin");
 
@@ -82,7 +82,10 @@ module.exports = (options = {}) => ({
     new HtmlWebpackPlugin({
       template: 'src/index.html'
     }),
-    new UglifyJSPlugin()
+    new UglifyJSPlugin(),
+    new CopyWebpackPlugin([
+        { from: 'src/opensearch.xml' }
+    ])
     // new CriticalPlugin({
     //   src: 'index.html',
     //   inline: true,
