@@ -7,7 +7,8 @@
                 <div class="column is-2 isquerter">
                         <div class="kanji"  v-for="kanji in entry.doc.kanji.slice(0, 1)">
 
-                            <ruby class="ruby"><rb>{{ kanji.text }}</rb><rt>{{kanji.readings[0]}}</rt></ruby>
+                            <!-- <ruby class="ruby"><rb>{{ kanji.text }}</rb><rt>{{kanji.readings[0]}}</rt></ruby> -->
+                            <ruby class="ruby"><span class="rt">{{kanji.readings[0]}}</span><span class="rb">{{ kanji.text }}</span></ruby>
 
                             <div class="bar-outer" v-if="kanji.commonness != 0">
                               <div class="bar-container" v-bind:style="{ width: Math.log10(kanji.commonness + 1) * 100 / 3 + '%' }" > <div class="bar-text">{{ kanji.commonness }}</div> </div>
@@ -37,7 +38,6 @@
                         </div>
                 </div>
             </div>
-
 
         </div>
 
@@ -250,9 +250,7 @@ body {
     padding-top: 8px;
 }
 
-.ruby{
-    // ruby-align: center;
-}
+
 .commonness{
     font-size: 50%;
     color: @color-secondary-2-0;
@@ -277,6 +275,24 @@ body {
     line-height: 1em;
     padding: 8px;
     padding-left: 0;
+}
+.ruby{
+    // font-size: 72pt;
+    display: inline-block;
+    line-height: 1em;
+    position: relative;
+}
+.rb{
+    display: inline-block;
+    // padding-top: 0.6em;
+    position: relative;
+}
+.rt{
+    font-size: 0.55em;
+    position: relative;
+    display: block;
+    line-height: 1.3em;
+    top: 0;
 }
 .score{
     color: @color-secondary-2-0;
