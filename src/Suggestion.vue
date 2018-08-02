@@ -37,8 +37,8 @@ export default {
             .then((response) => {
                 cb(response.body.map(el => ({"value":el[0], "link":""})));
             }, (response) => {
-                    // error callback
-                    console.log(response);
+                // error callback
+                console.log(response);
             });
 
         },
@@ -89,8 +89,8 @@ export default {
                             "levenshtein_distance": levenshtein_distance,
                             "starts_with": true,
                             "token_value": {
-                                "path":"meanings.ger[].text.textindex.tokenValues",
-                                "boost_fun":"Linear",
+                                "path":"meanings.ger[].text.textindex",
+                                "boost_fun":"Log10",
                                 "param":1
                             }
                         },
@@ -100,8 +100,8 @@ export default {
                             "levenshtein_distance": levenshtein_distance,
                             "starts_with": true,
                             "token_value": {
-                                "path":"meanings.eng[].textindex.tokenValues",
-                                "boost_fun":"Linear",
+                                "path":"meanings.eng[].textindex",
+                                "boost_fun":"Log10",
                                 "param":1
                             }
                         },

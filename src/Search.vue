@@ -101,7 +101,7 @@ export default {
             }
             var self = this;
             var url = jap_check.url()+`/search`
-            this.$http.post(url, this.get_search(queryString), {
+            this.$http.get(url + this.get_search_request(queryString), {
                 before(request) {
                     if (this.previousRequest) {this.previousRequest.abort(); }
                     this.previousRequest = request;
@@ -112,8 +112,106 @@ export default {
             }, (response) => {
                     console.log(response);
             });
+            // this.$http.post(url, this.post_search_request(queryString), {
+            //     before(request) {
+            //         if (this.previousRequest) {this.previousRequest.abort(); }
+            //         this.previousRequest = request;
+            //     }
+            // })
+            // .then((response) => {
+            //         self.result = response.body
+            // }, (response) => {
+            //         console.log(response);
+            // });
         },
-        get_search(queryString){
+        get_search_request(queryString){
+            if (queryString.indexOf("to ") == 0) {
+                queryString = queryString.substr(3, queryString.length)
+            }
+            queryString = queryString.toLowerCase().trim()
+            let query = "?query="+queryString;
+
+            let hiragana = wanakana.toHiragana(queryString);
+            if(!wanakana.isHiragana(queryString) && wanakana.isHiragana(hiragana)){
+                query+= " " +hiragana;
+            }
+            let katakana = wanakana.toKatakana(queryString);
+            if(!wanakana.isKatakana(queryString) && wanakana.isKatakana(katakana)){
+                query+= " " +katakana;
+            }
+            let romaji = wanakana.toRomaji(queryString);
+            if(!wanakana.isRomaji(queryString) && wanakana.isRomaji(romaji)){
+                query+= " " +romaji;
+            }
+            query += "&top=10";
+            query += "&skip="+this.getSkip();
+            query += "&why_found=true";
+            query += "&phrase_pairs=true";
+            query += '&boost_queries=[{"path": "commonness","boost_fun": "Log10","param": 1},{"path": "meanings.ger[].rank","expression": "10 / $SCORE"},{"path": "kana[].commonness","boost_fun": "Log10","param": 1},{"path": "kanji[].commonness","boost_fun": "Log10","param": 1}]';
+
+            return encodeURI(query);
+            // var ors = [];
+            // if (jap_check.containsKanji(queryString)) {
+            //     ors.push({
+            //         "search": jap_check.query(queryString,"kanji[].text", 0 ,true),
+            //         "boost": [
+            //             jap_check.boost("commonness", "Log10",1),
+            //             jap_check.boost("kanji[].commonness", "Log10",1)
+            //         ]
+            //     })
+            // }
+            // if(wanakana.isHiragana(wanakana.toHiragana(queryString))){
+            //     ors.push({
+            //         "search": jap_check.query(wanakana.toHiragana(queryString),"kana[].text", 0, true),
+            //         "boost": [
+            //             jap_check.boost("commonness", "Log10",1),
+            //             jap_check.boost("kana[].commonness", "Log10",1)
+            //         ]
+            //     })
+            // }
+
+            // if(wanakana.isKatakana(wanakana.toKatakana(queryString))){
+            //     ors.push({
+            //         "search": jap_check.query(wanakana.toKatakana(queryString),"kana[].text", 0, false),
+            //         "boost": [
+            //             jap_check.boost("commonness", "Log10", 1),
+            //             jap_check.boost("kana[].commonness", "Log10", 1)
+            //         ]
+            //     })
+            // }
+
+            // if (wanakana.isRomaji(wanakana.toRomaji(queryString)) || jap_check.isRomajiOrGerman(queryString)) {
+            //     let levenshtein = 0;
+            //     if(wanakana.isRomaji(queryString) || jap_check.isRomajiOrGerman(queryString)){
+            //         levenshtein = 1;
+            //     }
+            //     let queryString2 = wanakana.toRomaji(queryString);
+            //     ors.push(
+            //         {
+            //             "search": jap_check.query(queryString2,"meanings.ger[].text", levenshtein, false),
+            //             "boost": [
+            //                 jap_check.boost("commonness", "Log10", 1),
+            //                 {
+            //                     "path":"meanings.ger[].rank",
+            //                     "expression": "10 / $SCORE"
+            //                 }
+            //             ]
+            //         })
+
+            //     ors.push(
+            //         {
+            //             "search": jap_check.query(queryString,"meanings.eng[]", levenshtein, false),
+            //             "boost": [jap_check.boost("commonness", "Log10", 1) ]
+            //         })
+            // }
+
+            // return {
+            //     "or":ors,
+            //     "top": 10,
+            //     "skip": this.getSkip()
+            // }
+        },
+        post_search_request(queryString){
             if (queryString.indexOf("to ") == 0) {
                 queryString = queryString.substr(3, queryString.length)
             }
