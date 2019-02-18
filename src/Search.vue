@@ -315,7 +315,7 @@ export default {
                     },
                     {
                         "path": "meanings.ger[].rank",
-                        "expression": "10 / $SCORE"
+                        "expression": "2 / $SCORE"
                     },
                     {
                         "path": "kana[].commonness",
