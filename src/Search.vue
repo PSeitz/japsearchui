@@ -310,8 +310,8 @@ export default {
                 "boost_queries": [
                     {
                         "path": "commonness",
-                        "boost_fun": "Log10",
-                        "param": 1
+                        "boost_fun": "Log2",
+                        "param": 2
                     },
                     {
                         "path": "meanings.ger[].rank",
@@ -319,13 +319,13 @@ export default {
                     },
                     {
                         "path": "kana[].commonness",
-                        "boost_fun": "Log10",
-                        "param": 1
+                        "boost_fun": "Log2",
+                        "param": 2
                     },  
                     {
                         "path": "kanji[].commonness",
-                        "boost_fun": "Log10",
-                        "param": 1
+                        "boost_fun": "Log2",
+                        "param": 2
                     }
                 ],
                 "boost_fields": {
