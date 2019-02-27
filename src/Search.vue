@@ -287,19 +287,21 @@ export default {
             }
 
             let expandedQueryString = queryString
-            let hiragana = wanakana.toHiragana(queryString);
-            if(!wanakana.isHiragana(queryString) && wanakana.isHiragana(hiragana)){
-                expandedQueryString+= " " +hiragana;
-            }
-            let katakana = wanakana.toKatakana(queryString);
-            if(!wanakana.isKatakana(queryString) && wanakana.isKatakana(katakana)){
-                expandedQueryString+= " " +katakana;
-            }
-            let romaji = wanakana.toRomaji(queryString);
-            if(!wanakana.isRomaji(queryString) && wanakana.isRomaji(romaji)){
-                expandedQueryString+= " " +romaji;
-            }
 
+            if (!queryString.includes("AND") && !queryString.includes("OR")) {
+                let hiragana = wanakana.toHiragana(queryString);
+                if(!wanakana.isHiragana(queryString) && wanakana.isHiragana(hiragana)){
+                    expandedQueryString+= " " +hiragana;
+                }
+                let katakana = wanakana.toKatakana(queryString);
+                if(!wanakana.isKatakana(queryString) && wanakana.isKatakana(katakana)){
+                    expandedQueryString+= " " +katakana;
+                }
+                let romaji = wanakana.toRomaji(queryString);
+                if(!wanakana.isRomaji(queryString) && wanakana.isRomaji(romaji)){
+                    expandedQueryString+= " " +romaji;
+                }
+            }
 
             let query = {
                 "search_term": expandedQueryString,
@@ -321,7 +323,7 @@ export default {
                         "path": "kana[].commonness",
                         "boost_fun": "Log2",
                         "param": 2
-                    },  
+                    },
                     {
                         "path": "kanji[].commonness",
                         "boost_fun": "Log2",
