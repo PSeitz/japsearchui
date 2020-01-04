@@ -200,14 +200,16 @@ export default {
                 }
 
                 for(let entry of resp.data){
-                    delete entry.why_found["kanji[].readings[]"]
-                    delete entry.why_found["meanings.eng[]"]
-                    delete entry.why_found["meanings.ger[].text"]
+                    if (entry.why_found){
+                        delete entry.why_found["kanji[].readings[]"]
+                        delete entry.why_found["meanings.eng[]"]
+                        delete entry.why_found["meanings.ger[].text"]
 
-                    //TODO use UI Labels from 
-                    rename(entry.why_found, "kana[].romaji", "Kana (Romaji)")
-                    rename(entry.why_found, "kana[].text", "Kana")
-                    rename(entry.why_found, "kana[].conjugated[].form", "Kana Conjugated")
+                        //TODO use UI Labels from 
+                        rename(entry.why_found, "kana[].romaji", "Kana (Romaji)")
+                        rename(entry.why_found, "kana[].text", "Kana")
+                        rename(entry.why_found, "kana[].conjugated[].form", "Kana Conjugated")
+                    }
                 }
 
                 // let removeBTags = (orig) =>{
