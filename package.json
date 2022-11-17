@@ -13,7 +13,7 @@
     "element-ui": "^1.1.2",
     "express": "^4.16.2",
     "is-utf8": "^0.2.1",
-    "loader-utils": "^1.1.0",
+    "loader-utils": "^1.4.2",
     "muse-ui": "^2.1.0",
     "node-sass": "^4.7.2",
     "vue": "^2.1.8",
